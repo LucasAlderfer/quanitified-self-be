@@ -10,21 +10,21 @@ exports.seed = function(knex, Promise) {
 
         // Insert a single paper, return the paper ID, insert 2 footnotes
         knex('mealFoods').insert({
-          food_id: 2, meal_id: 1 }, 'id'),
+          foodId: 2, mealId: 1 }, 'id'),
         knex('mealFoods').insert({
-          food_id: 3, meal_id: 1 }, 'id'),
+          foodId: 3, mealId: 1 }, 'id'),
         knex('mealFoods').insert({
-          food_id: 1, meal_id: 2 }, 'id'),
+          foodId: 1, mealId: 2 }, 'id'),
         knex('mealFoods').insert({
-          food_id: 4, meal_id: 3 }, 'id'),
+          foodId: 4, mealId: 3 }, 'id'),
         knex('mealFoods').insert({
-          food_id: 2, meal_id: 3 }, 'id'),
+          foodId: 2, mealId: 3 }, 'id'),
         knex('mealFoods').insert({
-          food_id: 1, meal_id: 4 }, 'id'),
+          foodId: 1, mealId: 4 }, 'id'),
         knex('mealFoods').insert({
-          food_id: 3, meal_id: 4 }, 'id'),
+          foodId: 3, mealId: 4 }, 'id'),
         knex('mealFoods').insert({
-          food_id: 5, meal_id: 4 }, 'id')
+          foodId: 5, mealId: 4 }, 'id')
         .then(() => console.log('Seeding mealFoods complete!'))
         .catch(error => console.log(`Error seeding mealFoods data: ${error}`))
       ]) // end return Promise.all
