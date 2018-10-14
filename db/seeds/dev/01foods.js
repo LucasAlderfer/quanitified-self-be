@@ -2,8 +2,6 @@ exports.seed = function(knex, Promise) {
   // We must return a Promise from within our seed function
   // Without this initial `return` statement, the seed execution
   // will end before the asynchronous tasks have completed
-  // knex('mealFoods').del(); // delete all footnotes first
-  // knex('meals').del(); // delete all footnotes first
   return knex('foods').del() // delete all footnotes first
 
     // Now that we have a clean slate, we can re-insert our paper data

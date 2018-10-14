@@ -17,11 +17,11 @@ exports.up = function(knex, Promise) {
 
     knex.schema.createTable('mealFoods', function(table) {
       table.increments('id').primary();
-      table.integer('food_id').unsigned()
-      table.foreign('food_id')
+      table.integer('foodId').unsigned()
+      table.foreign('foodId')
         .references('foods.id');
-      table.integer('meal_id').unsigned()
-      table.foreign('meal_id')
+      table.integer('mealId').unsigned()
+      table.foreign('mealId')
         .references('meals.id');
 
       table.timestamps(true, true);
@@ -32,8 +32,8 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {
   return Promise.all([
+    knex.schema.dropTable('mealFoods'),
     knex.schema.dropTable('foods'),
     knex.schema.dropTable('meals'),
-    knex.schema.dropTable('foodMeals'),
   ]);
 }
