@@ -12,45 +12,41 @@ app.set('port', process.env.PORT || 3000);
 app.locals.title = 'quantified_self_js';
 
 app.get('/api/v1/meals', (request, response) => {
-  database('meals').select()
-  .then(meals => {
-    let fullMeal;
-    let mealsWithFoods = Array.from(meals, meal => {
-      database('foods').select().innerJoin('mealFoods', 'foods.id', 'mealFoods.foodId').where('mealFoods.mealId', meal.id)
-      .then(foodsPerMeal => {
-        fullMeal = Object.assign({}, meal);
-        fullMeal.foods = foodsPerMeal;
-        return fullMeal
-      })
+  let meals = database('meals').select();
+  let fullMeal;
+  let mealsWithFoods = meals.map(meal => {
+    return database('foods').select().innerJoin('mealFoods', 'foods.id', 'mealFoods.foodId').where('mealFoods.mealId', meal.id)
+    .then(foodsPerMeal => {
+      fullMeal = Object.assign({}, meal);
+      fullMeal.foods = foodsPerMeal;
+      return fullMeal
     })
-    return mealsWithFoods
-  })
+  });
+  Promise.resolve(mealsWithFoods)
   .then(mealsWithFoods => {
-    console.log(mealsWithFoods)
+    response.status(200).json(mealsWithFoods)
   })
+  .catch(error => response.json({ error }));
 });
 
 app.post('/api/v1/meals/:mealId/foods/:foodId', (request, response) => {
-  const foodId = request.params.foodId;
-  const foodName = database('foods').where(foodId, foodId)[0].name
   const mealId = request.params.mealId;
-  const mealName = database('meals').where(mealId, mealId)[0].name
+  const foodId = request.params.foodId;
   const addedMealFood = {
     foodId: foodId,
     mealId: mealId
   };
-  if (!database('foods').where(foodId, foodId) || !database('meals').where(mealId, mealId)) {
-    return response.status(404)
-  };
+  const meal = database('meals').find(id, mealId);
+  const food = database('foods').find(id, foodId);
   database('mealFoods').insert(addedMealFood, 'id')
-    .then(mealFood => {
-      response.status(201).json({
-        "message": `Successfully added ${foodName} to ${mealName}`
+  .then(mealFood => {
+    response.status(201).json({
+      "message": `Successfully added ${food.name} to ${meal.name}`
     })
-    })
-    .catch(error => {
-      response.status(500).json({ error });
-    })
+  })
+  .catch(error => {
+    response.status(404).json({ error });
+  })
 });
 
 app.listen(app.get('port'), () => {

@@ -77,7 +77,6 @@ describe('API Routes', () => {
       .get('/api/v1/meals')
       .end((err, response) => {
         let mealId = response.body[0].id
-        let mealName = response.body[0].name
         chai.request(app)
         .post(`/api/v1/meals/${mealId}/foods/77`)
         .end((err, response) => {
