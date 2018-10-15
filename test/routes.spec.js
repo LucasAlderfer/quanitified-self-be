@@ -123,7 +123,7 @@ describe('API Routes', () => {
     })
   })
   
-    describe('GET /api/v1/meals', () => {
+  describe('GET /api/v1/meals', () => {
     it('should return all of the meals', done => {
        chai.request(app)
       .get('/api/v1/meals')
@@ -146,20 +146,20 @@ describe('API Routes', () => {
       chai.request(app)
       .get('/api/v1/meals')
       .end((err, response) => {
-        let mealId = response.body[0].id
-        let mealName = response.body[0].name
+        let mealId = response.body[0].id;
+        let mealName = response.body[0].name;
         chai.request(app)
         .get('/api/v1/foods')
         .end((err, response) => {
-          let foodId = response.body[0].id
-          let foodName = response.body[0].name
+          let foodId = response.body[0].id;
+          let foodName = response.body[0].name;
           chai.request(app)
           .post(`/api/v1/meals/${mealId}/foods/${foodId}`)
           .end((err, response) => {
             response.should.have.status(201);
             response.should.be.json;
             response.body.should.have.property('message');
-            repsonse.body.message.should.equal(`Successfully added ${foodName} to ${mealName}`);
+            response.body.message.should.equal(`Successfully added ${foodName} to ${mealName}`);
             done();
           });
         });
@@ -170,9 +170,9 @@ describe('API Routes', () => {
       chai.request(app)
       .get('/api/v1/meals')
       .end((err, response) => {
-        let mealId = response.body[0].id
+        let mealId = response.body[0].id;
         chai.request(app)
-        .post(`/api/v1/meals/${mealId}/foods/77`)
+        .post(`/api/v1/meals/${mealId}/foods/777777`)
         .end((err, response) => {
           response.should.have.status(404);
           done();
@@ -186,16 +186,16 @@ describe('API Routes', () => {
       chai.request(app)
       .get('/api/v1/meals')
       .end((err, response) => {
-        let mealId = response.body[0].id
-        let mealName = response.body[0].name
-        let foodId = response.body[0].foods[0].id
-        let foodName = response.body[0].foods[0].name
+        let mealId = response.body[0].id;
+        let mealName = response.body[0].name;
+        let foodId = response.body[0].foods[0].id;
+        let foodName = response.body[0].foods[0].name;
         chai.request(app)
         .delete(`/api/v1/meals/${mealId}/foods/${foodId}`)
         .end((err, response) => {
           response.should.be.json;
           response.body.should.have.property('message');
-          repsonse.body.message.should.equal(`Successfully deleted ${foodName} from ${mealName}`);
+          response.body.message.should.equal(`Successfully removed ${foodName} from ${mealName}`);
           done();
         });
       });
@@ -205,10 +205,10 @@ describe('API Routes', () => {
       chai.request(app)
       .get('/api/v1/meals')
       .end((err, response) => {
-        let mealId = response.body[0].id
-        let mealName = response.body[0].name
+        let mealId = response.body[0].id;
+        let mealName = response.body[0].name;
         chai.request(app)
-        .delete(`/api/v1/meals/${mealId}/foods/77`)
+        .delete(`/api/v1/meals/${mealId}/foods/777777`)
         .end((err, response) => {
           response.should.have.status(404);
           done();
