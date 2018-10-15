@@ -87,7 +87,7 @@ describe('API Routes', () => {
   })
 
   describe('POST /api/v1/foods', () => {
-    it('should should return the created food or a 400 code', done => {
+    it('should return the created food or a 400 code', done => {
       chai.request(app)
       .post('/api/v1/foods')
       .send({
@@ -104,6 +104,40 @@ describe('API Routes', () => {
         response.body.should.have.property('calories');
         done();
       })
+    })
+  })
+
+  describe('PATCH /api/v1/foods/:id', () => {
+    it('should return an updated food or a 404', done => {
+      chai.request(app)
+      .get('/api/v1/foods')
+      .end((err, response) => {
+        response.should.have.status(200);
+        const newFood = response.body[0].id;
+        done();
+      })
+      .then(() => {
+        chai.request(app)
+        .patch(`/api/v1/foods/${newFood}`)
+        .send({
+          "food": {
+            "name": 'Newest Food',
+            "calories": 475
+          }
+        })
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.body.should.be.a('object');
+          response.body.should.have.property('id');
+          response.body.should.have.property('name');
+          response.body.should.have.property('calories');
+          response.body['id'].should.equal(newFood)
+          response.body['name'].should.equal('Newest Food')
+          response.body['calories'].should.equal(475)
+          done();
+        })
+      })
+      done();
     })
   })
 });
