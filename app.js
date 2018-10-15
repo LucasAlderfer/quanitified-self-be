@@ -11,48 +11,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'quantified_self_js';
 
-app.get('/api/v1/meals', (request, response) => {
-  let meals = database('meals').select();
-  let fullMeal;
-  let mealsWithFoods = meals.map(meal => {
-    return database('foods').select().innerJoin('mealFoods', 'foods.id', 'mealFoods.foodId').where('mealFoods.mealId', meal.id)
-    .then(foodsPerMeal => {
-      fullMeal = Object.assign({}, meal);
-      fullMeal.foods = foodsPerMeal;
-      return fullMeal
-    })
-  });
-  Promise.resolve(mealsWithFoods)
-  .then(mealsWithFoods => {
-    response.status(200).json(mealsWithFoods)
-  })
-  .catch(error => response.json({ error }));
-});
-
-app.post('/api/v1/meals/:mealId/foods/:foodId', (request, response) => {
-  const mealId = request.params.mealId;
-  const foodId = request.params.foodId;
-  const addedMealFood = {
-    foodId: foodId,
-    mealId: mealId
-  };
-  const meal = database('meals').find(id, mealId);
-  const food = database('foods').find(id, foodId);
-  database('mealFoods').insert(addedMealFood, 'id')
-  .then(mealFood => {
-    response.status(201).json({
-      "message": `Successfully added ${food.name} to ${meal.name}`
-    })
-  })
-  .catch(error => {
-    response.status(404).json({ error });
-  })
-});
-
-app.listen(app.get('port'), () => {
-  console.log(`${app.locals.title} is running on ${app.get('port')}.`);
-});
-
 app.get('/api/v1/foods', (request, response) => {
   database('foods').select()
     .then(foods => {
@@ -97,6 +55,80 @@ app.post('/api/v1/foods', (request, response) => {
     .catch(error => {
       response.status(500).json({ error });
     });
-})
+});
+
+app.get('/api/v1/meals', (request, response) => {
+  let meals = database('meals').select();
+  let fullMeal;
+  let mealsWithFoods = meals.map(meal => {
+    return database('foods').select().innerJoin('mealFoods', 'foods.id', 'mealFoods.foodId').where('mealFoods.mealId', meal.id)
+    .then(foodsPerMeal => {
+      fullMeal = Object.assign({}, meal);
+      fullMeal.foods = foodsPerMeal;
+      return fullMeal
+    })
+  });
+  Promise.resolve(mealsWithFoods)
+  .then(mealsWithFoods => {
+    response.status(200).json(mealsWithFoods)
+  })
+  .catch(error => response.json({ error }));
+});
+
+app.post('/api/v1/meals/:mealId/foods/:foodId', (request, response) => {
+  const mealId = request.params.mealId;
+  const foodId = request.params.foodId;
+  const addedMealFood = {
+    foodId: parseInt(foodId),
+    mealId: parseInt(mealId)
+  };
+  let identifiedFood;
+  let identifiedMeal;
+  database('meals').select().where({id: mealId}).first()
+  .then(meal => {
+    identifiedMeal = meal;
+    return database('foods').select().where({id: foodId}).first()
+  })
+  .then(food => {
+    identifiedFood = food;
+    database('mealFoods').insert(addedMealFood, 'id');
+  })
+  .then(mealFood => {
+    response.status(201).json({
+      "message": `Successfully added ${identifiedFood.name} to ${identifiedMeal.name}`
+    })
+  })
+  .catch(error => {
+    response.status(404).json({ error });
+  })
+});
+
+app.delete('/api/v1/meals/:mealId/foods/:foodId', (request, response) => {
+  const mealId = request.params.mealId;
+  const foodId = request.params.foodId;
+  let identifiedFood;
+  let identifiedMeal;
+  database('meals').select().where({id: mealId}).first()
+  .then(meal => {
+    identifiedMeal = meal;
+    return database('foods').select().where({id: foodId}).first()
+  })
+  .then(food => {
+    identifiedFood = food;
+    database('mealFoods').where({foodId: foodId, mealId: mealId}).del();
+  })
+  .then(mealFood => {
+    response.json({
+      "message": `Successfully removed ${identifiedFood.name} from ${identifiedMeal.name}`
+    })
+  })
+  .catch(error => {
+    response.status(404).json({ error });
+  })
+});
+
+app.listen(app.get('port'), () => {
+  console.log(`${app.locals.title} is running on ${app.get('port')}.`);
+});
 
 module.exports = app;
