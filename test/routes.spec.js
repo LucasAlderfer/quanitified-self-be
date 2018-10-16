@@ -28,7 +28,7 @@ describe('API Routes', () => {
       throw error;
     });
   });
-  
+
   describe('GET /api/v1/foods', () => {
     it('should return all of the foods', done => {
       chai.request(app)
@@ -93,10 +93,9 @@ describe('API Routes', () => {
     it('should return an updated food or a 404', done => {
       chai.request(app)
       .get('/api/v1/foods')
-      .end((err, response) => {
+      .then((err, response) => {
         response.should.have.status(200);
         const newFood = response.body[0].id;
-        done();
       })
       .then(() => {
         chai.request(app)
@@ -116,13 +115,12 @@ describe('API Routes', () => {
           response.body['id'].should.equal(newFood)
           response.body['name'].should.equal('Newest Food')
           response.body['calories'].should.equal(475)
-          done();
         })
       })
       done();
     })
   })
-  
+
     describe('GET /api/v1/meals', () => {
     it('should return all of the meals', done => {
        chai.request(app)
