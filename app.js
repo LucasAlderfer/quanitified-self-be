@@ -99,4 +99,28 @@ app.post('/api/v1/foods', (request, response) => {
     });
 })
 
+app.patch('/api/v1/foods/:id', (request, response) => {
+  const newFood = request.body
+
+  for (let requiredParameter of ['name', 'calories']) {
+    if (!newFood['food'][requiredParameter]) {
+      return response
+        .status(422)
+        .send({ error: `Expected format: { 'food': { 'name': <string>, 'calories': <number> } }. You're missing a "${requiredParameter}" property.` });
+    }
+  }
+
+  database('foods').where({id: request.params.id}).update({
+    name: newFood['food']['name'],
+    calories: newFood['food']['calories']
+  })
+  .then(() => database('foods').where({id: request.params.id}))
+  .then(updatedFood => {
+    response.status(200).json(updatedFood[0])
+  })
+  .catch(error => {
+    response.status(500).json({ error })
+  })
+})
+
 module.exports = app;
