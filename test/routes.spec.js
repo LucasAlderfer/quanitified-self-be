@@ -50,21 +50,29 @@ describe('API Routes', () => {
   describe('DELETE /api/v1/foods/:id', () => {
     it('should return a 204 if the food corresponding to the provided id is deleted from the db, and a 400 code if the food is not found', done => {
       chai.request(app)
-      .delete('/api/v1/foods/1')
-      .end((err, response) => {
-        response.should.have.status(204);
-        done();
+      .post('/api/v1/foods')
+      .send({
+        "food": {
+          "name": 'Tomatoes',
+          "calories": 900
+        }
       })
-      .then(() => {
+      .end((err, response) => {
+        response.should.have.status(200);
+        const oldFood = response.body.id;
         chai.request(app)
-        .get('/api/v1/foods')
+        .delete(`/api/v1/foods/${oldFood}`)
         .end((err, response) => {
-          response.should.have.status(200);
-          response.body.length.should.equal(4);
-          done();
+          response.should.have.status(204);
+          chai.request(app)
+          .get('/api/v1/foods')
+          .end((err, response) => {
+            response.should.have.status(200);
+            response.body.length.should.equal(5);
+            done();
+          })
         })
       })
-      done();
     })
   })
 
@@ -118,7 +126,7 @@ describe('API Routes', () => {
       })
     })
   })
-  
+
   describe('GET /api/v1/meals', () => {
     it('should return all of the meals', done => {
        chai.request(app)
