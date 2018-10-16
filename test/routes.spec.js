@@ -93,11 +93,9 @@ describe('API Routes', () => {
     it('should return an updated food or a 404', done => {
       chai.request(app)
       .get('/api/v1/foods')
-      .then((err, response) => {
+      .end((err, response) => {
         response.should.have.status(200);
         const newFood = response.body[0].id;
-      })
-      .then(() => {
         chai.request(app)
         .patch(`/api/v1/foods/${newFood}`)
         .send({
@@ -115,9 +113,9 @@ describe('API Routes', () => {
           response.body['id'].should.equal(newFood)
           response.body['name'].should.equal('Newest Food')
           response.body['calories'].should.equal(475)
+          done();
         })
       })
-      done();
     })
   })
   
