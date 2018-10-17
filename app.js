@@ -11,6 +11,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'quantified_self_js';
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "DELETE, PATCH");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.get('/api/v1/foods', (request, response) => {
   database('foods').select()
     .then(foods => {
@@ -127,17 +134,6 @@ app.delete('/api/v1/meals/:mealId/foods/:foodId', (request, response) => {
   })
 });
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "DELETE, PATCH");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
-
-app.listen(app.get('port'), () => {
-  console.log(`${app.locals.title} is running on ${app.get('port')}.`);
-});
-
 app.patch('/api/v1/foods/:id', (request, response) => {
   const newFood = request.body
 
@@ -161,5 +157,9 @@ app.patch('/api/v1/foods/:id', (request, response) => {
     response.status(500).json({ error })
   })
 })
+
+app.listen(app.get('port'), () => {
+  console.log(`${app.locals.title} is running on ${app.get('port')}.`);
+});
 
 module.exports = app;
