@@ -68,7 +68,7 @@ app.get('/api/v1/meals', (request, response) => {
   let meals = database('meals').select();
   let fullMeal;
   let mealsWithFoods = meals.map(meal => {
-    return database('foods').select().innerJoin('mealFoods', 'foods.id', 'mealFoods.foodId').where('mealFoods.mealId', meal.id)
+    return database('foods').select('foods.*').innerJoin('mealFoods', 'foods.id', 'mealFoods.foodId').where('mealFoods.mealId', meal.id)
     .then(foodsPerMeal => {
       fullMeal = Object.assign({}, meal);
       fullMeal.foods = foodsPerMeal;
@@ -98,7 +98,7 @@ app.post('/api/v1/meals/:mealId/foods/:foodId', (request, response) => {
   })
   .then(food => {
     identifiedFood = food;
-    database('mealFoods').insert(addedMealFood, 'id');
+    return database('mealFoods').insert(addedMealFood, 'id');
   })
   .then(mealFood => {
     response.status(201).json({
@@ -122,7 +122,10 @@ app.delete('/api/v1/meals/:mealId/foods/:foodId', (request, response) => {
   })
   .then(food => {
     identifiedFood = food;
-    database('mealFoods').where({foodId: foodId, mealId: mealId}).del();
+    return database('mealFoods').where({foodId: foodId, mealId: mealId}).limit(1)
+  })
+  .then(mealFood => {
+    return database('mealFoods').where({id: mealFood[0].id}).del()
   })
   .then(mealFood => {
     response.json({
