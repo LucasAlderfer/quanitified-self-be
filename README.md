@@ -2,7 +2,7 @@
 This is the back-end API endpoints server for the QUANTIFIEDself web application.  The API end points are described below.
 
 ## BASE API URL
-https://blooming-sea-65150.herokuapp.com/
+https://blooming-sea-65150.herokuapp.com
 
 ## API End Points
 ### Foods
