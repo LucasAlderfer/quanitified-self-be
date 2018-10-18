@@ -117,6 +117,14 @@ Once the server is running, visit in your browser:
 
 * `http://localhost:3000/` to run your application.
 
+## Running Tests with Mocha
+
+To run the local test suite, run the mocha command shown below
+
+```
+mocha --exit
+```
+
 ## Built With
 
 * [JavaScript](https://www.javascript.com/)
