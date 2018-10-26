@@ -95,7 +95,7 @@ Removes a valid food object of specific :id from a valid meal object of specific
 1. Clone the repository down locally
 
   ```
-  git clone https://github.com/JPLynch35/quantified-self-be.git
+  git clone https://github.com/LucasAlderfer/quantified-self-be.git
   ```
 2. CD into the `quantified-self-be` directory
 
